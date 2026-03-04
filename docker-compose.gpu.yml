@@ -1,0 +1,49 @@
+services:
+  llm:
+    build:
+      context: .
+      dockerfile: Dockerfile.llama.gpu
+    container_name: llama-gpu
+    ports:
+      - "127.0.0.1:${LLAMA_PORT:-8001}:8001"
+    volumes:
+      - ./models:/models
+    environment:
+      - LLAMA_CACHE=/models
+    deploy:
+      resources:
+        reservations:
+          devices:
+            - driver: nvidia
+              count: all
+              capabilities: [gpu]
+    command:
+      - "-hf"
+      - "${GPU_HF_MODEL:-unsloth/Qwen3.5-35B-A3B-GGUF:UD-Q4_K_XL}"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8001"
+      - "-c"
+      - "${LLAMA_CTX_SIZE:-128000}"
+      - "--temp"
+      - "0.6"
+      - "--top-p"
+      - "0.95"
+      - "--top-k"
+      - "20"
+      - "--min-p"
+      - "0.00"
+    restart: unless-stopped
+
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    profiles:
+      - interactive
+    volumes:
+      - ./workspace:/workspace
+      - ./agent_data:/home/node/.pi
+    depends_on:
+      - llm

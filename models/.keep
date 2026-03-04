@@ -1,0 +1,1 @@
+This directory caches downloaded Hugging Face models and will be mounted into the llama.cpp container.

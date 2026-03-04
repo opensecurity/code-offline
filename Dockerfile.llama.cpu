@@ -1,0 +1,30 @@
+# Dockerfile.llama.cpu
+FROM ubuntu:24.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install build dependencies
+RUN apt-get update && apt-get install -y --no-install-recommends \
+    build-essential git cmake curl libcurl4-openssl-dev libssl-dev ca-certificates libgomp1 \
+    && rm -rf /var/lib/apt/lists/*
+
+# Clone and build llama.cpp from source
+RUN git clone https://github.com/ggerganov/llama.cpp.git /llama.cpp
+WORKDIR /llama.cpp
+
+# Use cmake for building
+RUN cmake -B build -DLLAMA_CURL=ON -DLLAMA_OPENSSL=ON -DGGML_CUDA=OFF
+RUN cmake --build build --config Release -j $(nproc)
+
+# Create a non-root user and models directory
+RUN useradd -m -s /bin/bash llamauser \
+    && mkdir -p /models && chown -R llamauser:llamauser /models /llama.cpp
+
+# Switch to the non-root user
+USER llamauser
+
+# Set working directory to the bin folder and ensure libraries are found
+WORKDIR /llama.cpp/build/bin
+ENV LD_LIBRARY_PATH=/llama.cpp/build/bin:$LD_LIBRARY_PATH
+
+ENTRYPOINT ["./llama-server"]

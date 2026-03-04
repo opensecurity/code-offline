@@ -1,0 +1,46 @@
+services:
+  llm:
+    build:
+      context: .
+      dockerfile: Dockerfile.llama.cpu
+    container_name: llama-cpu
+    ports:
+      - "127.0.0.1:${LLAMA_PORT:-8001}:8001"
+    volumes:
+      - ./models:/models
+    environment:
+      - LLAMA_CACHE=/models
+    command:
+      - "-hf"
+      - "${CPU_HF_MODEL:-unsloth/Qwen3.5-9B-GGUF:UD-Q4_K_XL}"
+      - "--host"
+      - "0.0.0.0"
+      - "--port"
+      - "8001"
+      - "-c"
+      - "${LLAMA_CTX_SIZE:-16384}"
+      - "--temp"
+      - "0.6"
+      - "--top-p"
+      - "0.95"
+      - "--top-k"
+      - "20"
+      - "--min-p"
+      - "0.00"
+      - "--alias"
+      - "unsloth/Qwen3.5-9B-GGUF"
+      - "--chat-template-kwargs"
+      - '{"enable_thinking":true}'
+    restart: unless-stopped
+
+  agent:
+    build:
+      context: .
+      dockerfile: Dockerfile.agent
+    profiles:
+      - interactive
+    volumes:
+      - ./workspace:/workspace
+      - ./agent_data:/home/node/.pi
+    depends_on:
+      - llm

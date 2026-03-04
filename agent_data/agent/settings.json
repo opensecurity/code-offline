@@ -1,0 +1,5 @@
+{
+  "defaultProvider": "llama-cpp",
+  "defaultModel": "unsloth/Qwen3.5-4B-GGUF",
+  "lastChangelogVersion": "0.55.4"
+}

@@ -1,0 +1,21 @@
+# Environment variables (contains secrets)
+.env
+
+# Heavy model files downloaded by llama.cpp
+/models/*
+!/models/.keep
+
+# Agent runtime data
+/agent_data/agent/sessions/
+/agent_data/agent/bin/
+/agent_data/agent/auth.json
+/agent_data/agent/db.sqlite
+/agent_data/agent/db.sqlite-journal
+
+# User workspace directory (keeps the folder but ignores the user's generated code inside)
+/workspace/*
+!/workspace/.keep
+
+# OS generated files
+.DS_Store
+Thumbs.db
