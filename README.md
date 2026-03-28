@@ -1,4 +1,4 @@
-# Pi Coding Agent + Llama.cpp Stack
+# Pi Coding Agent + llama.cpp Stack
 
 A localized, containerized development environment for running the [pi coding agent](https://github.com/badlogic/pi-mono/tree/main/packages/coding-agent) backed by [llama.cpp](https://github.com/ggml-org/llama.cpp). This stack lets you run local models and the agent without needing external API dependencies, keeping your code and data private. It supports both CPU and NVIDIA GPU setups via a unified interface.
 
